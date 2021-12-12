@@ -1,5 +1,5 @@
 from flask_socketio import SocketIO, send, emit, disconnect, join_room
-from models import db, User#, Post, Topic , db, Post, Status
+from models import db, User, Topic# Post, db, Post, Status
 
 class Messenger:
 
@@ -26,15 +26,13 @@ class Messenger:
         del user 
 
   def subscribe_to_topic(self, topicId, userId):
-    pass
-    # topic = Topic.query.get(topicId)
-    # if topic:
-    #   topic.subscribe(userId)
+    topic = Topic.query.get(topicId)
+    if topic:
+      topic.subscribe(userId)
 
   def unsubscribe_from_topic(self, topicId, userId):
-    pass
-      # topic = Topic.query.get(topicId)
-      # topic.unsubscribe(topic)
+    topic = Topic.query.get(topicId)
+    topic.unsubscribe(topic)
 
 
   def sendToUser(self, sid, data):

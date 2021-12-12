@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
-from .subscription import Subscription, Status
+# from .subscription import Subscription, Status
 # from .user import User
 # from .inbox import Inbox
 
@@ -29,13 +29,14 @@ class Topic(db.Model):
         self.text = text
 
     def subscribe(self, userId):
-        sub = Subscription.query.filter_by(userId=userId, topicId=self.id).first()
-        if sub :
-          sub.set_active()
-        else :
-          sub = Subscription(userId=userId, topicId=self.id)
-        db.session.add(sub)
-        db.session.commit()
+        # sub = Subscription.query.filter_by(userId=userId, topicId=self.id).first()
+        # if sub :
+        #   sub.set_active()
+        # else :
+        #   sub = Subscription(userId=userId, topicId=self.id)
+        # db.session.add(sub)
+        # db.session.commit()
+        pass
 
     # def num_subscribers(self):
     #   return len(self.subscribers)
