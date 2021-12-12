@@ -1,0 +1,144 @@
+
+<!doctype html>
+<html>
+  <head>
+
+     <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Counter</title>
+
+  </head>
+  <body>
+
+    <nav class="purple">
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo left">Counting App <span id="status"></span></a>
+        <ul id="nav-mobile" class="right">
+          <li><a href="index.html">Counter</a></li>
+          <li><a href="feed.html">Feed</a></li>
+          <li class="active"><a  href="messenger.html">Messenger</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container" id="content">
+
+       <main class="container">
+        <form class="card col s12" onsubmit="login(event)" style="padding:1em">
+
+            <div class="row">
+              <div class="input-field col s12">
+                <input placeholder="Placeholder" name="username" value="bob" type="text" class="validate">
+                <label for="first_name">Username</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input name="password" type="password" value="bobpass" class="validate">
+                <label for="password">Password</label>
+              </div>
+            </div>
+            <div class="card-action">
+              <input type="submit" class="blue btn text-white">
+            </div>
+
+        </form>
+      </main>
+
+      <div class="row">
+        <H1>Counter <span id="counter"></span></H1>
+      </div>
+
+      <div class="row">
+          <div class="col s12">
+              <button id="incrementBtn" onclick="increment()" class="btn waves-effect waves-light">Increment</button>
+          </div>
+      </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>
+    <script src="socket.js"></script>
+
+    <script>
+
+      const server = "https://flask-websocket-1.snickdx.repl.co";
+      let count = 0;
+      let token;
+      let sm;
+
+      function showLogin(username){
+        document.querySelector('#status').innerText = `${username} Logged In`;
+      }
+
+      async function login(event){
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData);
+        const resp = await sendRequest(`${server}/auth`, 'POST', data);
+        if ( 'access_token' in resp ){
+          token = resp.access_token;
+          localStorage.setItem('access_token', token); 
+          sm = await SocketManager.getInstance(server, token);
+        }
+          
+      }
+
+      function getToken(){
+        token = localStorage.getItem('access_token');
+        return token;
+      }
+
+      async function sendRequest(url, method, body){
+        const options = { method, headers: {'Content-Type': 'application/json'}  };
+        if(body)options.body = JSON.stringify(body);
+        const response = await fetch(url, options);
+        return response.json();
+      }
+
+      function alert(html){
+          M.toast({html})
+      }
+
+      async function increment(){
+        let res = await sm.emit("increment", {message:'increment counter'});
+      }
+
+      function updateCounter({counter}){
+        document.querySelector('#counter').innerHTML = counter;
+      }
+
+      async function main(){     
+        let token = getToken(); 
+        if(token){
+          sm = SocketManager.getInstance(server, token);
+          
+          sm.addCustomEventHandler('incremented', updateCounter);
+          sm.addCustomEventHandler('connected', (data)=>{ 
+            updateCounter(data);
+            showLogin(data.username);
+            alert('Connection Established!');
+          });
+          sm.addCustomEventHandler('expired', (data)=>{ 
+            alert('Token expired please login again');
+          });
+          
+        }
+        
+      }
+      
+
+      
+
+      main();
+      
+    </script>
+    
+  </body>
+</html>
