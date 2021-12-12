@@ -7,7 +7,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, send, emit, disconnect, join_room
 from flask_jwt import JWT, jwt_required, current_identity, _jwt
-from models import db, User, Topic, Post, Inbox
+from models import db, User, Topic#, Subscription #, Post,Subscription
 from messenger import Messenger
 
 messenger = Messenger()
@@ -50,6 +50,19 @@ counter = 0
 #             return f(*args, **kwargs)
 #     return wrapped
 
+
+'''
+
+
+@app.route('/getSubscribers/<topicId>')
+def get_subs(topicId):
+  topic = Topic.query.get(topicId)
+  if topic:
+    users = topic.get_subscribers()
+    return jsonify([ user.toDict() for user in users ])
+  return 'topic '+topicId+' not found', 404
+'''
+
 @app.route('/')
 def client_app():
   return app.send_static_file('index.html')
@@ -67,6 +80,12 @@ def create_user(username, password):
   db.session.commit()
   return username+" saved!"
 
+
+@app.route('/createpost/<userId>/<topicId>/<text>')
+def create_post(userId, topicId, text):
+  messenger.new_post(userId, topicId, text)
+  return 'post created!'
+
 @app.route('/createTopic/<text>')
 def create_topic(text):
   topic = Topic(text=text)
@@ -74,15 +93,17 @@ def create_topic(text):
   db.session.commit()
   return jsonify({'topicId':topic.id, 'text':topic.text})
 
-@app.route('/createpost/<userId>/<topicId>/<text>')
-def create_post(userId, topicId, text):
-  messenger.new_post(userId, topicId, text)
-  return 'post created!'
 
 @app.route('/topics')
 def get_topics():
   topics = Topic.query.all()
   return jsonify([topic.toDict() for topic in topics])
+
+@app.route('/userTopics/<userId>')
+def get_user_topics(userId):
+  user = User.query.get(userId)
+  return jsonify(user.get_topics_json())
+
 
 @app.route('/feed/<userId>')
 def get_feed(userId):
@@ -92,18 +113,6 @@ def get_feed(userId):
   else :
     return 'user not found'
 
-@app.route('/userTopics/<userId>')
-def get_user_topics(userId):
-  user = User.query.get(userId)
-  return jsonify(user.get_topics_json())
-
-@app.route('/getSubscribers/<topicId>')
-def get_subs(topicId):
-  topic = Topic.query.get(topicId)
-  if topic:
-    users = topic.get_subscribers()
-    return jsonify([ user.toDict() for user in users ])
-  return 'topic '+topicId+' not found', 404
 
 @app.route('/users')
 def get_users():
@@ -114,6 +123,11 @@ def get_users():
 def subscribe_to_topic(userId, topicId):
   messenger.subscribe_to_topic(topicId, userId)
   return 'subscription created '
+
+
+'''
+Sockets
+'''
 
 @socketio.on('increment')
 def increment(data):

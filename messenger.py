@@ -1,16 +1,17 @@
 from flask_socketio import SocketIO, send, emit, disconnect, join_room
-from models import User, Topic, db, Post, Status
+from models import db, User#, Post, Topic , db, Post, Status
 
 class Messenger:
 
   def new_post(self, userId, topicId, text):
-    post = Post(userId=userId, topicId=topicId, text=text)
-    db.session.add(post)
-    db.session.commit()
-    topic = Topic.query.get(topicId)
-    num_subs = topic.new_post(post.id)
-    self.broadcast(topic.text, {'postId':post.id, 'author':userId, 'topic':topic.text, 'topicId':topicId, 'text':text, 'created':post.created})
-    return num_subs
+    pass
+    # post = Post(userId=userId, topicId=topicId, text=text)
+    # db.session.add(post)
+    # db.session.commit()
+    # topic = Topic.query.get(topicId)
+    # num_subs = topic.new_post(post.id)
+    # self.broadcast(topic.text, {'postId':post.id, 'author':userId, 'topic':topic.text, 'topicId':topicId, 'text':text, 'created':post.created})
+    # return num_subs
 
 
   def broadcast(self, topic, data):
@@ -25,14 +26,15 @@ class Messenger:
         del user 
 
   def subscribe_to_topic(self, topicId, userId):
-    topic = Topic.query.get(topicId)
-    if topic:
-      topic.subscribe(userId)
-
+    pass
+    # topic = Topic.query.get(topicId)
+    # if topic:
+    #   topic.subscribe(userId)
 
   def unsubscribe_from_topic(self, topicId, userId):
-      topic = Topic.query.get(topicId)
-      topic.unsubscribe(topic)
+    pass
+      # topic = Topic.query.get(topicId)
+      # topic.unsubscribe(topic)
 
 
   def sendToUser(self, sid, data):

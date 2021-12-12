@@ -1,13 +1,18 @@
-from . import db
-# from .subscription import Subscription, Status
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+from .subscription import Subscription, Status
 # from .user import User
-from .inbox import Inbox
+# from .inbox import Inbox
 
 import enum
 
 class Level(enum.Enum):
     ZERO = "ZERO"
     ONE = "ONE"
+
+    def __str__(self):
+      return '%s' % self.value
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,14 +28,14 @@ class Topic(db.Model):
     def __init__(self, text):
         self.text = text
 
-    # def subscribe(self, userId):
-    #     sub = Subscription.query.filter_by(userId=userId, topicId=self.id).first()
-    #     if sub :
-    #       sub.set_active()
-    #     else :
-    #       sub = Subscription(userId=userId, topicId=self.id)
-    #     db.session.add(sub)
-    #     db.session.commit()
+    def subscribe(self, userId):
+        sub = Subscription.query.filter_by(userId=userId, topicId=self.id).first()
+        if sub :
+          sub.set_active()
+        else :
+          sub = Subscription(userId=userId, topicId=self.id)
+        db.session.add(sub)
+        db.session.commit()
 
     # def num_subscribers(self):
     #   return len(self.subscribers)
@@ -50,6 +55,7 @@ class Topic(db.Model):
           
     def toDict(self):
         return {
-            "text": self.text,
-            "level": self.level
+          "id": self.id,
+          "text": self.text,
+          "level": str(self.level)
         }

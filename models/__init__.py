@@ -1,8 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
-
 from .user import *
-from .post import *
-from .subscription import *
 from .topic import *
-from .inbox import *
+
+
+# from .subscription import *
+# from .inbox import *
+# from .post import *

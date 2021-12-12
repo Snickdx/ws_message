@@ -8,6 +8,9 @@ class Status(enum.Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
 
+    def __str__(self):
+      return '%s' % self.value
+
 class Subscription(db.Model):
 
     userId = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -37,5 +40,5 @@ class Subscription(db.Model):
             "userId": self.userId,
             "topicId": self.topicId,
             "created": self.get_created_string(),
-            "satus": self.status
+            "satus": str(self.status)
         }

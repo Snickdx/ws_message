@@ -1,4 +1,6 @@
-from . import db
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(db.Model):
@@ -18,9 +20,10 @@ class User(db.Model):
     # def get_topics_json(self):
     #   return [ topic.toDict() for topic in self.subbed_topics]
 
-    # def get_feed_json(self):
-    #   return [ post.toDict() for post in self.feed ]
-
+    def get_feed_json(self):
+      # return [ post.toDict() for post in self.feed ]
+      return []
+      
     def get_sid(self):
       return self.sid
 
