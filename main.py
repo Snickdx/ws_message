@@ -7,7 +7,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO, send, emit, disconnect, join_room
 from flask_jwt import JWT, jwt_required, current_identity, _jwt
-from models import db, User, Topic#, Subscription #, Post,Subscription
+from models import db, User, Topic#, Post
 from messenger import Messenger
 
 messenger = Messenger()

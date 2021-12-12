@@ -1,8 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
-# from .subscription import Subscription, Status
-# from .user import User
+from .subscription import Subscription, Status
+from .user import User
 # from .inbox import Inbox
 
 import enum
@@ -19,11 +19,11 @@ class Topic(db.Model):
     text = db.Column(db.String(300), nullable=False)
     level = db.Column(db.Enum(Level), default=Level.ZERO)
   
-    # def get_active_subscribers(self):
-    #   subs = Subscription.query.filter_by(topicId=self.id, status=Status.ACTIVE)
-    #   userIds = [ sub.userId for sub in subs ]
-    #   users = User.query.filter(User.id.in_(userIds))
-    #   return users
+    def get_active_subscribers(self):
+      subs = Subscription.query.filter_by(topicId=self.id, status=Status.ACTIVE)
+      userIds = [ sub.userId for sub in subs ]
+      users = User.query.filter(User.id.in_(userIds))
+      return users
 
     def __init__(self, text):
         self.text = text
