@@ -1,5 +1,5 @@
 from flask_socketio import SocketIO, send, emit, disconnect, join_room
-from models import db, User, Topic# Post, db, Post, Status
+from models import db, User, Topic#, Post, Status
 
 class Messenger:
 
